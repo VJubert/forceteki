@@ -20,9 +20,9 @@ describe('Steadfast Battalion', function() {
                 this.player1.clickCard(this.steadfastBattalion);
                 this.player1.clickCard(this.p2Base);
                 this.player1.clickCard(this.battlefieldMarine);
-                expect(this.battlefieldMarine.getPower()).toBe(5)
+                expect(this.battlefieldMarine.getPower()).toBe(5);
 
-                this.player2.pass()
+                this.player2.pass();
                 this.player1.clickCard(this.battlefieldMarine);
                 this.player1.clickCard(this.p2Base);
                 expect(this.p2Base.damage).toBe(10);
@@ -38,9 +38,9 @@ describe('Steadfast Battalion', function() {
                 // now he shouldn't be buff unit
                 this.player1.clickCard(this.steadfastBattalion);
                 this.player1.clickCard(this.p2Base);
-                expect(this.battlefieldMarine.getPower()).toBe(3)
+                expect(this.battlefieldMarine.getPower()).toBe(3);
 
-                this.player2.pass()
+                this.player2.pass();
                 this.player1.clickCard(this.battlefieldMarine);
                 this.player1.clickCard(this.p2Base);
                 expect(this.p2Base.damage).toBe(8);
