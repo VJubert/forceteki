@@ -21,7 +21,7 @@ describe('Gamorrean Guards', function() {
 
                 console.log('play strafing-gunship');
                 this.player1.clickCard(this.strafingGunship);
-                expect(this.strafingGunship.location).toBe('space arena')
+                expect(this.strafingGunship.location).toBe('space arena');
                 expect(this.player2).toBeActivePlayer();
 
                 this.player2.clickCard(this.battlefieldMarine);
