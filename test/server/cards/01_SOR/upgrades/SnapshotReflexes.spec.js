@@ -23,9 +23,9 @@ describe('Snapshot Reflexes', function() {
 
                 this.player1.clickCard(this.isbAgent);
                 expect(this.p2Base.damage).toBe(0);
-                expect(this.isbAgent.getPower()).toBe(2)
-                    expect(this.isbAgent).toHaveExactUpgradeNames(['snapshot-reflexes']);
-                    expect(this.player1).toHavePrompt('toto');
+                expect(this.isbAgent.getPower()).toBe(2);
+                expect(this.isbAgent).toHaveExactUpgradeNames(['snapshot-reflexes']);
+                expect(this.player1).toHavePrompt('toto');
                 // expect(this.player1).toBeAbleToSelectExactly([this.sundariPeacekeeper, this.atst, this.p2Base]);
 
                 // this.player1.clickCard(this.sundariPeacekeeper);

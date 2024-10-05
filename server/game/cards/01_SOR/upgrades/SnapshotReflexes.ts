@@ -11,8 +11,8 @@ export default class SnapshotReflexes extends UpgradeCard {
     public override setupCardAbilities () {
         this.addWhenPlayedAbility({
             title: 'You may attack with attached unit',
-            initiateAttack: context => {
-                console.log('toto')
+            initiateAttack: (context) => {
+                console.log('toto');
                 return ({
                     attacker: context.source.parentCard
                 });
