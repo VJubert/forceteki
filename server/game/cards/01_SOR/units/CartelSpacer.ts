@@ -12,12 +12,12 @@ export default class CartelSpacer extends NonLeaderUnitCard {
 
     public override setupCardAbilities () {
         this.addWhenPlayedAbility({
-            title: 'If you control another [Cunning] unit, exhaust an enemy unit that costs 4 or less',
+            title: 'If you control another Cunning unit, exhaust an enemy unit that costs 4 or less',
             targetResolver: {
                 cardCondition: (card) => card.isUnit() && card.cost <= 4,
                 controller: RelativePlayer.Opponent,
                 immediateEffect: AbilityHelper.immediateEffects.conditional({
-                    condition: (context) => context.source.controller.getUnitsInPlay(WildcardLocation.AnyArena, (card) => card !== context.source && card.hasSomeAspect(Aspect.Cunning)).length > 0,
+                    condition: (context) => context.source.controller.getOtherUnitsInPlayWithAspect(context.source, Aspect.Cunning).length > 0,
                     onTrue: AbilityHelper.immediateEffects.exhaust(),
                     onFalse: AbilityHelper.immediateEffects.noAction()
                 })
