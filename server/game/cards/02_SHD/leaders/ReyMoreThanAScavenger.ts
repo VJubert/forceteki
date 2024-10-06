@@ -22,7 +22,7 @@ export default class ReyMoreThanAScavenger extends LeaderUnitCard {
 
     protected override setupLeaderUnitSideAbilities () {
         this.addOnAttackAbility({
-            title: 'You may give an Experience token to a unit with 2 or less power',
+            title: 'Give an Experience token to a unit with 2 or less power',
             optional: true,
             targetResolver: {
                 cardCondition: (card, _) => card.isUnit() && card.getPower() <= 2,
