@@ -22,7 +22,7 @@ describe('Benthic Two Tubes', function() {
 
                 this.player1.clickCard(this.greenSquadronAwing);
                 // benthic: 2 + awing: 3+2
-                expect(this.p2Base.damage).toBe(7)
+                expect(this.p2Base.damage).toBe(7);
             });
         });
     });
