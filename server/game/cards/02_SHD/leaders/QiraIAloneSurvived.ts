@@ -1,6 +1,6 @@
 import AbilityHelper from '../../../AbilityHelper';
 import { LeaderUnitCard } from '../../../core/card/LeaderUnitCard';
-import { RelativePlayer } from "../../../core/Constants";
+import { EventName, RelativePlayer, WildcardCardType } from '../../../core/Constants';
 
 export default class QiraIAloneSurvived extends LeaderUnitCard {
     protected override getImplementationId () {
@@ -16,6 +16,7 @@ export default class QiraIAloneSurvived extends LeaderUnitCard {
             cost: [AbilityHelper.costs.abilityResourceCost(1), AbilityHelper.costs.exhaustSelf()],
             targetResolver: {
                 controller: RelativePlayer.Self,
+                cardTypeFilter: WildcardCardType.Unit,
                 immediateEffect: AbilityHelper.immediateEffects.sequential([
                     AbilityHelper.immediateEffects.damage({ amount: 2 }),
                     AbilityHelper.immediateEffects.giveShield()
@@ -27,10 +28,12 @@ export default class QiraIAloneSurvived extends LeaderUnitCard {
     protected override setupLeaderUnitSideAbilities () {
         this.addTriggeredAbility({
             title: 'Give an Experience token to a unit with 2 or less power',
-            when: { onUnitEntersPlay: (event, context) => event.card == context.source },
+            when: {
+                [EventName.OnLeaderDeployed]: (event, context) => event.card === context.source
+            },
             immediateEffect: AbilityHelper.immediateEffects.sequential([
-                AbilityHelper.immediateEffects.heal(context => ({ target: context.source.controller.getUnitsInPlay().concat(context.source.controller.opponent.getUnitsInPlay()), amount: 999 })),
-                AbilityHelper.immediateEffects.damage(context => ({ target: context.source.controller.getUnitsInPlay().concat(context.source.controller.opponent.getUnitsInPlay()), amount: context.target.getHp() })),
+                AbilityHelper.immediateEffects.heal((context) => ({ target: context.source.controller.getUnitsInPlay().concat(context.source.controller.opponent.getUnitsInPlay()), amount: 999 })),
+                AbilityHelper.immediateEffects.damage((context) => ({ target: context.source.controller.getUnitsInPlay().concat(context.source.controller.opponent.getUnitsInPlay()), amount: (c) => Math.floor(c.getHp() / 2) })),
             ]),
         });
     }

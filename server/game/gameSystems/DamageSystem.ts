@@ -6,9 +6,12 @@ import { type ICardTargetSystemProperties, CardTargetSystem } from '../core/game
 import { GameEvent } from '../core/event/GameEvent';
 import * as Contract from '../core/utils/Contract';
 import AbilityHelper from '../AbilityHelper';
+import { UnitCard } from "../core/card/CardTypes";
+
+export type DamageFunction = (card: UnitCard) => number;
 
 export interface IDamageProperties extends ICardTargetSystemProperties {
-    amount: number;
+    amount: number | DamageFunction;
     isCombatDamage?: boolean;
     isOverwhelmDamage?: boolean;
 }
@@ -23,7 +26,11 @@ export class DamageSystem<TContext extends AbilityContext = AbilityContext> exte
     protected override readonly targetTypeFilter = [WildcardCardType.Unit, CardType.Base];
 
     public eventHandler(event): void {
-        event.card.addDamage(event.damage);
+        if (typeof event.damage === 'number') {
+            event.card.addDamage(event.damage);
+        } else {
+            event.card.addDamage(event.damage(event.card))
+        }
     }
 
     public override getEffectMessage(context: TContext): [string, any[]] {
