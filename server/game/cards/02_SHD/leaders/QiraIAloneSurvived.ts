@@ -36,4 +36,4 @@ export default class QiraIAloneSurvived extends LeaderUnitCard {
     }
 }
 
-ReyMoreThanAScavenger.implemented = true;
+QiraIAloneSurvived.implemented = true;
