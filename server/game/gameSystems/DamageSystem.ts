@@ -2,12 +2,13 @@ import type { AbilityContext } from '../core/ability/AbilityContext';
 import type { Card } from '../core/card/Card';
 import { AbilityRestriction, CardType, EventName, WildcardCardType } from '../core/Constants';
 import * as EnumHelpers from '../core/utils/EnumHelpers';
-import { CardTargetSystem, type ICardTargetSystemProperties } from '../core/gameSystem/CardTargetSystem';
+import { type ICardTargetSystemProperties, CardTargetSystem } from '../core/gameSystem/CardTargetSystem';
+import { GameEvent } from '../core/event/GameEvent';
 import * as Contract from '../core/utils/Contract';
-import { UnitCard } from '../core/card/CardTypes';
+import AbilityHelper from '../AbilityHelper';
 
 export interface IDamageProperties extends ICardTargetSystemProperties {
-    amount: number | ((card: UnitCard) => number);
+    amount: number;
     isCombatDamage?: boolean;
     isOverwhelmDamage?: boolean;
 }
@@ -22,16 +23,7 @@ export class DamageSystem<TContext extends AbilityContext = AbilityContext> exte
     protected override readonly targetTypeFilter = [WildcardCardType.Unit, CardType.Base];
 
     public eventHandler(event): void {
-        switch (typeof event.damage) {
-            case 'number':
-                event.card.addDamage(event.damage);
-                break;
-            case 'function':
-                event.card.addDamage(event.damage(event.card));
-                break;
-            default:
-                Contract.fail(`Unexpected type ${typeof event.damage}`);
-        }
+        event.card.addDamage(event.damage);
     }
 
     public override getEffectMessage(context: TContext): [string, any[]] {
