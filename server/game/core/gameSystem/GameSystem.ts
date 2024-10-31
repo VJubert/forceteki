@@ -138,10 +138,12 @@ export abstract class GameSystem<TContext extends AbilityContext = AbilityContex
      * @param target Target under consideration
      * @param context Context of ability being executed
      * @param additionalProperties Any additional properties to extend the default ones with
+     * @param mustChangeGameState If set to true, `canAffect` will only return true if the effect will alter game state.
+     * False by default as ability effects can still be triggered even if they will not change game state.
      * @returns True if the target is legal for the system, false otherwise
      */
     // IMPORTANT: this method is referred to in the debugging guide. if we change the signature, we should upgrade the guide.
-    public canAffect(target: any, context: TContext, additionalProperties: any = {}): boolean {
+    public canAffect(target: any, context: TContext, additionalProperties: any = {}, mustChangeGameState = false): boolean {
         const { cannotBeCancelled } = this.generatePropertiesFromContext(context, additionalProperties);
 
         return (

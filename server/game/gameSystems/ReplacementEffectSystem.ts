@@ -82,11 +82,11 @@ export class ReplacementEffectSystem<TContext extends TriggeredAbilityContext = 
         );
     }
 
-    public override canAffect(target: any, context: TContext, additionalProperties = {}): boolean {
+    public override canAffect(target: any, context: TContext, additionalProperties: any = {}, mustChangeGameState = false): boolean {
         const { replacementImmediateEffect: replacementGameAction } = this.generatePropertiesFromContext(context, additionalProperties);
         return (
             (!context.event.cannotBeCancelled && !replacementGameAction) ||
-            replacementGameAction.canAffect(target, context, additionalProperties)
+            replacementGameAction.canAffect(target, context, additionalProperties, mustChangeGameState)
         );
     }
 
