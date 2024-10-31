@@ -55,7 +55,7 @@ export class TriggeredAbilityWindow extends BaseStep {
     }
 
     public emitEvents() {
-        const events = this.triggeringEvents.filter((event) => !this.eventsToExclude.includes(event) && !event.cancelled);
+        const events = this.triggeringEvents.filter((event) => !this.eventsToExclude.includes(event) && !event.isCancelledOrReplaced);
 
         for (const event of events) {
             this.game.emit(event.name + ':' + this.triggerAbilityType, event, this);
@@ -101,7 +101,7 @@ export class TriggeredAbilityWindow extends BaseStep {
     public addToWindow(context: TriggeredAbilityContext) {
         this.assertWindowResolutionNotStarted('ability', context.source);
 
-        if (!context.event.cancelled && context.ability) {
+        if ((context.event.canResolve || context.event.isResolved) && context.ability) {
             if (!this.unresolved.has(context.player)) {
                 this.unresolved.set(context.player, [context]);
             } else {
@@ -259,7 +259,12 @@ export class TriggeredAbilityWindow extends BaseStep {
         this.unresolved = new Map<Player, TriggeredAbilityContext[]>();
 
         for (const [player, triggeredAbilities] of preCleanupTriggers) {
-            const cleanedAbilities = triggeredAbilities.filter((context) => !context.event.cancelled);
+            const cleanedAbilities = this.triggerAbilityType === AbilityType.Triggered
+                ? triggeredAbilities.filter((context) => context.event.isResolved)
+                : this.triggerAbilityType === AbilityType.ReplacementEffect
+                    ? triggeredAbilities.filter((context) => context.event.canResolve)
+                    : Contract.fail(`Unexpected trigger ability type ${this.triggerAbilityType}`);
+
             if (cleanedAbilities.length > 0) {
                 this.unresolved.set(player, cleanedAbilities);
             }

@@ -72,7 +72,7 @@ class InitiateAbilityEventWindow extends EventWindow {
 
         this.eventsToExecute.forEach((event) => {
             event.checkCondition();
-            if (!event.cancelled) {
+            if (event.canResolve) {
                 event.executeHandler();
             }
         });
@@ -84,7 +84,7 @@ class InitiateAbilityEventWindow extends EventWindow {
     }
 
     emitEvents() {
-        this.eventsToExecute = this.eventsToExecute.filter((event) => !event.cancelled);
+        this.eventsToExecute = this.eventsToExecute.filter((event) => event.canResolve);
         this.eventsToExecute.forEach((event) => this.game.emit(event.name, event));
     }
 }

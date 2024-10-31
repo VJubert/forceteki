@@ -97,12 +97,12 @@ class CardAbilityStep extends PlayerOrCardAbility {
             `queue ${system.name} event generation steps for ${this}`);
         }
         this.game.queueSimpleStep(() => {
-            let eventsToResolve = context.events.filter((event) => !event.cancelled && !event.resolved);
+            let eventsToResolve = context.events.filter((event) => event.canResolve);
             if (eventsToResolve.length > 0) {
                 let window = this.openEventWindow(eventsToResolve);
 
                 if (this.properties.then) {
-                    window.setThenAbilityStep((context) => new CardAbilityStep(this.game, this.card, this.getConcreteThen(this.properties.then, context)), context);
+                    window.setSubAbilityStep((context) => new CardAbilityStep(this.game, this.card, this.getConcreteThen(this.properties.then, context)), context);
                 }
             } else if (this.properties.then) {
                 // if no events for the current step, skip directly to the "then" step (if any)

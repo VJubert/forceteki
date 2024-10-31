@@ -160,10 +160,6 @@ export abstract class CardTargetSystem<TContext extends AbilityContext = Ability
         event.card = card;
     }
 
-    public override isEventFullyResolved(event, card: Card, context: TContext, additionalProperties): boolean {
-        return event.card === card && super.isEventFullyResolved(event, card, context, additionalProperties);
-    }
-
     protected override defaultTargets(context: TContext): Card[] {
         return [context.source];
     }
@@ -174,10 +170,9 @@ export abstract class CardTargetSystem<TContext extends AbilityContext = Ability
         event.destination = properties.destination || Location.Discard;
 
         event.setContingentEventsGenerator((event) => {
-            const onCardLeavesPlayEvent = new GameEvent(EventName.OnCardLeavesPlay, {
+            const onCardLeavesPlayEvent = new GameEvent(EventName.OnCardLeavesPlay, context, {
                 player: context.player,
-                card,
-                context,
+                card
             });
             const contingentEvents = [onCardLeavesPlayEvent];
 

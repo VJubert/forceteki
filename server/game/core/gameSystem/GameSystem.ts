@@ -266,10 +266,6 @@ export abstract class GameSystem<TContext extends AbilityContext = AbilityContex
         return true;
     }
 
-    public isEventFullyResolved(event: GameEvent, target: any, context: TContext, additionalProperties: any = {}): boolean {
-        return !event.cancelled && event.name === this.eventName;
-    }
-
     public isOptional(context: TContext, additionalProperties: any = {}): boolean {
         return this.generatePropertiesFromContext(context, additionalProperties).optional ?? false;
     }
@@ -281,7 +277,6 @@ export abstract class GameSystem<TContext extends AbilityContext = AbilityContex
     protected addPropertiesToEvent(event: any, target: any, context: TContext, additionalProperties: any = {}): void {
         const { contingentSourceEvent } = this.generatePropertiesFromContext(context, additionalProperties);
 
-        event.context = context;
         event.contingentSourceEvent = contingentSourceEvent;
     }
 
@@ -290,9 +285,7 @@ export abstract class GameSystem<TContext extends AbilityContext = AbilityContex
      */
     protected createEvent(target: any, context: TContext, additionalProperties): GameEvent {
         const { cannotBeCancelled } = this.generatePropertiesFromContext(context, additionalProperties);
-        const event = new GameEvent(this.eventName, { cannotBeCancelled });
-        event.checkFullyResolved = (eventAtResolution) =>
-            this.isEventFullyResolved(eventAtResolution, target, context, additionalProperties);
+        const event = new GameEvent(this.eventName, context, { cannotBeCancelled });
         return event;
     }
 
@@ -302,7 +295,7 @@ export abstract class GameSystem<TContext extends AbilityContext = AbilityContex
      */
     protected updateEvent(event: GameEvent, target: any, context: TContext, additionalProperties: any = {}): void {
         this.addPropertiesToEvent(event, target, context, additionalProperties);
-        event.replaceHandler((event) => this.eventHandler(event, additionalProperties));
+        event.setHandler((event) => this.eventHandler(event, additionalProperties));
         event.condition = () => this.checkEventCondition(event, additionalProperties);
     }
 

@@ -31,7 +31,7 @@ export class EventWindow extends BaseStepWithPipeline {
     private parentWindow?: EventWindow = null;
     private resolvedEvents: any[] = [];
     private subwindowEvents: any[] = [];
-    private thenAbilityComponents?: IThenAbilityComponents = null;
+    private subAbilityStepComponents?: IThenAbilityComponents = null;
     private windowDepth?: number = null;
 
     public get events() {
@@ -65,7 +65,7 @@ export class EventWindow extends BaseStepWithPipeline {
         super(game);
 
         events.forEach((event) => {
-            if (!event.cancelled) {
+            if (event.canResolve) {
                 this.addEvent(event);
             }
         });
@@ -83,7 +83,7 @@ export class EventWindow extends BaseStepWithPipeline {
             new SimpleStep(this.game, () => this.executeHandlers(), 'executeHandlers'),
             new SimpleStep(this.game, () => this.resolveGameState(), 'resolveGameState'),
             new SimpleStep(this.game, () => this.resolveSubwindowEvents(), 'checkSubwindowEvents'),
-            new SimpleStep(this.game, () => this.resolveThenAbilityStep(), 'checkThenAbilitySteps'),
+            new SimpleStep(this.game, () => this.resolveSubAbilityStep(), 'checkThenAbilitySteps'),
             new SimpleStep(this.game, () => this.resolveTriggersIfNecessary(), 'resolveTriggersIfNecessary'),
             new SimpleStep(this.game, () => this.cleanup(), 'cleanup')
         ]);
@@ -100,14 +100,14 @@ export class EventWindow extends BaseStepWithPipeline {
         return event;
     }
 
-    public setThenAbilityStep(
+    public setSubAbilityStep(
         thenAbilityGenerator: (context: AbilityContext) => CardAbilityStep,
         context: AbilityContext,
         condition: (context: AbilityContext) => boolean = null
     ) {
-        Contract.assertIsNullLike(this.thenAbilityComponents, 'Attempting to set event window\'s then ability but it is already set');
+        Contract.assertIsNullLike(this.subAbilityStepComponents, 'Attempting to set event window\'s then ability but it is already set');
 
-        this.thenAbilityComponents = { generator: thenAbilityGenerator, context, condition };
+        this.subAbilityStepComponents = { generator: thenAbilityGenerator, context, condition };
     }
 
     public addSubwindowEvents(events) {
@@ -190,7 +190,7 @@ export class EventWindow extends BaseStepWithPipeline {
         for (const event of eventsToResolve) {
             // need to checkCondition here to ensure the event won't fizzle due to another event's resolution (e.g. double honoring an ordinary character with YR etc.)
             event.checkCondition();
-            if (!event.cancelled) {
+            if (event.canResolve) {
                 event.executeHandler();
 
                 this.resolvedEvents.push(event);
@@ -221,17 +221,16 @@ export class EventWindow extends BaseStepWithPipeline {
         }
     }
 
-
     // if the effect has an additional "then" step, resolve it
-    private resolveThenAbilityStep() {
-        if (this.thenAbilityComponents == null) {
+    private resolveSubAbilityStep() {
+        if (this.subAbilityStepComponents == null) {
             return;
         }
 
-        const context = this.thenAbilityComponents.context;
-        const thenAbility = this.thenAbilityComponents.generator(context);
+        const context = this.subAbilityStepComponents.context;
+        const thenAbility = this.subAbilityStepComponents.generator(context);
 
-        const condition = this.thenAbilityComponents.condition ?? (() => true);
+        const condition = this.subAbilityStepComponents.condition ?? (() => true);
         if (context.events.every((event) => condition(event))) {
             this.game.resolveAbility(thenAbility.createContext(context.player));
         }
