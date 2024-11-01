@@ -18,12 +18,6 @@ export enum TriggerHandlingMode {
     CannotHaveTriggers = 'cannotHaveTriggers',
 }
 
-interface IThenAbilityComponents {
-    generator: (context: AbilityContext) => CardAbilityStep;
-    context: AbilityContext;
-    condition?: (context: AbilityContext) => boolean;
-}
-
 export class EventWindow extends BaseStepWithPipeline {
     protected _events: any[] = [];
     protected _triggeredAbilityWindow?: TriggeredAbilityWindow = null;
@@ -31,7 +25,7 @@ export class EventWindow extends BaseStepWithPipeline {
     private parentWindow?: EventWindow = null;
     private resolvedEvents: any[] = [];
     private subwindowEvents: any[] = [];
-    private subAbilityStepComponents?: IThenAbilityComponents = null;
+    private subAbilityStepFn?: () => AbilityContext = null;
     private windowDepth?: number = null;
 
     public get events() {
@@ -80,7 +74,7 @@ export class EventWindow extends BaseStepWithPipeline {
             new SimpleStep(this.game, () => this.openReplacementEffectWindow(), 'openReplacementEffectWindow'),
             new SimpleStep(this.game, () => this.generateContingentEvents(), 'generateContingentEvents'),
             new SimpleStep(this.game, () => this.preResolutionEffects(), 'preResolutionEffects'),
-            new SimpleStep(this.game, () => this.executeHandlers(), 'executeHandlers'),
+            new SimpleStep(this.game, () => this.resolveEvents(), 'resolveEvents'),
             new SimpleStep(this.game, () => this.resolveGameState(), 'resolveGameState'),
             new SimpleStep(this.game, () => this.resolveSubwindowEvents(), 'checkSubwindowEvents'),
             new SimpleStep(this.game, () => this.resolveSubAbilityStep(), 'checkThenAbilitySteps'),
@@ -100,14 +94,10 @@ export class EventWindow extends BaseStepWithPipeline {
         return event;
     }
 
-    public setSubAbilityStep(
-        thenAbilityGenerator: (context: AbilityContext) => CardAbilityStep,
-        context: AbilityContext,
-        condition: (context: AbilityContext) => boolean = null
-    ) {
-        Contract.assertIsNullLike(this.subAbilityStepComponents, 'Attempting to set event window\'s then ability but it is already set');
+    public setSubAbilityStep(subAbilityStepFn: () => AbilityContext) {
+        Contract.assertIsNullLike(this.subAbilityStepFn, 'Attempting to set event window\'s then ability but it is already set');
 
-        this.subAbilityStepComponents = { generator: thenAbilityGenerator, context, condition };
+        this.subAbilityStepFn = subAbilityStepFn;
     }
 
     public addSubwindowEvents(events) {
@@ -178,7 +168,7 @@ export class EventWindow extends BaseStepWithPipeline {
         this._events.forEach((event) => event.preResolutionEffect());
     }
 
-    protected executeHandlers() {
+    protected resolveEvents() {
         const eventsToResolve = this._events.sort((event) => event.order);
 
         // we emit triggered abilities here to ensure that they get triggered in case e.g. an ability is blanked during event resolution
@@ -223,16 +213,13 @@ export class EventWindow extends BaseStepWithPipeline {
 
     // if the effect has an additional "then" step, resolve it
     private resolveSubAbilityStep() {
-        if (this.subAbilityStepComponents == null) {
+        if (this.subAbilityStepFn == null) {
             return;
         }
 
-        const context = this.subAbilityStepComponents.context;
-        const thenAbility = this.subAbilityStepComponents.generator(context);
-
-        const condition = this.subAbilityStepComponents.condition ?? (() => true);
-        if (context.events.every((event) => condition(event))) {
-            this.game.resolveAbility(thenAbility.createContext(context.player));
+        const subAbilityStep = this.subAbilityStepFn();
+        if (!!subAbilityStep) {
+            this.game.resolveAbility(subAbilityStep);
         }
     }
 

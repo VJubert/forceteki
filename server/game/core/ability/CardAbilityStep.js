@@ -100,34 +100,12 @@ class CardAbilityStep extends PlayerOrCardAbility {
             let eventsToResolve = context.events.filter((event) => event.canResolve);
             if (eventsToResolve.length > 0) {
                 let window = this.openEventWindow(eventsToResolve);
-
-                if (this.properties.then) {
-                    window.setSubAbilityStep(
-                        (context) => new CardAbilityStep(this.game, this.card, this.getConcreteThen(this.properties.then, context)),
-                        context,
-                        this.checkThenCondition
-                    );
-                } else if (this.properties.ifYouDo) {
-                    Contract.assertTrue(eventsToResolve.length < 2, `Multiple effects for an 'if you do' condition are not supported. Events: ${eventsToResolve.map((event) => event.name).join(', ')}`);
-                    window.setSubAbilityStep(
-                        () => new CardAbilityStep(this.game, this.card, this.properties.ifYouDo),
-                        context,
-                        () => eventsToResolve[0].isResolvedOrReplacementResolved
-                    );
-                } else if (this.properties.ifYouDoNot) {
-                    Contract.assertTrue(eventsToResolve.length < 2, `Multiple effects for an 'if you do not' condition are not supported. Events: ${eventsToResolve.map((event) => event.name).join(', ')}`);
-                    window.setSubAbilityStep(
-                        () => new CardAbilityStep(this.game, this.card, this.properties.ifYouDo),
-                        context,
-                        () => !eventsToResolve[0].isResolvedOrReplacementResolved
-                    );
-                }
+                window.setSubAbilityStep(() => this.getSubAbilityStep(context, eventsToResolve));
             // if no events for the current step, skip directly to the "then" step (if any)
-            } else if (this.properties.then) {
-                const then = this.getConcreteThen(this.properties.then, context);
-                if (!then.thenCondition || then.thenCondition(context)) {
-                    let cardAbilityStep = new CardAbilityStep(this.game, this.card, then);
-                    this.game.resolveAbility(cardAbilityStep.createContext(context.player));
+            } else {
+                const subAbilityStep = this.getSubAbilityStep(context, []);
+                if (!!subAbilityStep) {
+                    this.game.resolveAbility(subAbilityStep);
                 }
             }
         }, `resolve events for ${this}`);
@@ -135,6 +113,36 @@ class CardAbilityStep extends PlayerOrCardAbility {
 
     openEventWindow(events) {
         return this.game.openEventWindow(events);
+    }
+
+    getSubAbilityStep(context, resolvedAbilityEvents) {
+        if (this.properties.then) {
+            const then = this.getConcreteThen(this.properties.then, context);
+            if (!then.thenCondition || then.thenCondition(context)) {
+                return new CardAbilityStep(this.game, this.card, then).createContext(context.player);
+            }
+
+            return null;
+        }
+
+        let ifAbility;
+        let effectShouldResolve;
+
+        if (this.properties.ifYouDo) {
+            ifAbility = this.properties.ifYouDo;
+            effectShouldResolve = true;
+        } else if (this.properties.ifYouDoNot) {
+            ifAbility = this.properties.ifYouDo;
+            effectShouldResolve = false;
+        } else {
+            return null;
+        }
+
+        Contract.assertTrue(resolvedAbilityEvents.length < 2, `Multiple effects for an 'if you do (not)' condition are not supported. Events: ${resolvedAbilityEvents.map((event) => event.name).join(', ')}`);
+
+        return resolvedAbilityEvents[0].isResolvedOrReplacementResolved === effectShouldResolve
+            ? new CardAbilityStep(this.game, this.card, this.properties.ifYouDo).createContext(context.player)
+            : null;
     }
 
     /** @override */
