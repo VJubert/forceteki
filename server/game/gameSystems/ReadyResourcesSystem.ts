@@ -23,7 +23,12 @@ export class ReadyResourcesSystem<TContext extends AbilityContext = AbilityConte
 
     public override canAffect(player: Player, context: TContext, additionalProperties: any = {}, mustChangeGameState = false): boolean {
         const { isCost, amount } = this.generatePropertiesFromContext(context);
-        return !(isCost && player.countExhaustedResources() < amount) && super.canAffect(player, context, additionalProperties, mustChangeGameState);
+
+        if ((isCost || mustChangeGameState) && player.countExhaustedResources() < amount) {
+            return false;
+        }
+
+        return super.canAffect(player, context, additionalProperties, mustChangeGameState);
     }
 
     public override defaultTargets(context: TContext): Player[] {

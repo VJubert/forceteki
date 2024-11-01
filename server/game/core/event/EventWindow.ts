@@ -222,7 +222,7 @@ export class EventWindow extends BaseStepWithPipeline {
         }
     }
 
-    // if the effect has an additional "then" step, resolve it
+    // if the effect has an additional "then" or "if you do (not)" step, resolve it
     private resolveSubAbilityStep() {
         if (this.subAbilityStepFn == null) {
             return;

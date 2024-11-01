@@ -92,6 +92,8 @@ export class GameEvent {
     }
 
     public executeHandler() {
+        Contract.assertTrue(this.canResolve, `Attempting to execute handler for ${this.name} but it is not in a resolvable state: ${this.resolutionStatus}`);
+
         this.resolutionStatus = EventResolutionStatus.RESOLVING;
         if (this.handler) {
             this.handler(this);

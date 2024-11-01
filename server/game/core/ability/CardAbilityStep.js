@@ -118,7 +118,7 @@ class CardAbilityStep extends PlayerOrCardAbility {
     /** "Sub-ability-steps" are subsequent steps after the initial ability effect, such as "then" or "if you do" */
     getSubAbilityStep(context, resolvedAbilityEvents) {
         if (this.properties.then) {
-            const then = this.getConcreteThen(this.properties.then, context);
+            const then = typeof this.properties.then === 'function' ? this.properties.then(context) : this.properties.then;
             if (!then.thenCondition || then.thenCondition(context)) {
                 return new CardAbilityStep(this.game, this.card, then).createContext(context.player);
             }
@@ -144,6 +144,7 @@ class CardAbilityStep extends PlayerOrCardAbility {
             return null;
         }
 
+        // the last of this ability step's events is the one used for evaluating the "if you do (not)" condition
         const conditionalEvent = resolvedAbilityEvents[resolvedAbilityEvents.length - 1];
 
         return conditionalEvent.isResolvedOrReplacementResolved === effectShouldResolve
@@ -154,17 +155,6 @@ class CardAbilityStep extends PlayerOrCardAbility {
     /** @override */
     isCardAbility() {
         return true;
-    }
-
-    getConcreteThen(then, context) {
-        if (then && typeof then === 'function') {
-            return then(context);
-        }
-        return then;
-    }
-
-    checkThenCondition(thenAbilityStep, context) {
-        return !thenAbilityStep.thenCondition || thenAbilityStep.thenCondition(context);
     }
 }
 

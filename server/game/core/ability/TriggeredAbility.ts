@@ -8,10 +8,6 @@ import Game from '../Game';
 import { TriggeredAbilityWindow } from '../gameSteps/abilityWindow/TriggeredAbilityWindow';
 import * as Contract from '../utils/Contract';
 import { CardWithTriggeredAbilities } from '../card/CardTypes';
-import { CardTargetResolver } from './abilityTargets/CardTargetResolver';
-import { DropdownListTargetResolver } from './abilityTargets/DropdownListTargetResolver';
-import { PlayerTargetResolver } from './abilityTargets/PlayerTargetResolver';
-import { SelectTargetResolver } from './abilityTargets/SelectTargetResolver';
 
 interface IEventRegistration {
     name: string;
