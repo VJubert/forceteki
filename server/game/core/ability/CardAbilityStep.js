@@ -102,12 +102,30 @@ class CardAbilityStep extends PlayerOrCardAbility {
                 let window = this.openEventWindow(eventsToResolve);
 
                 if (this.properties.then) {
-                    window.setSubAbilityStep((context) => new CardAbilityStep(this.game, this.card, this.getConcreteThen(this.properties.then, context)), context);
+                    window.setSubAbilityStep(
+                        (context) => new CardAbilityStep(this.game, this.card, this.getConcreteThen(this.properties.then, context)),
+                        context,
+                        this.checkThenCondition
+                    );
+                } else if (this.properties.ifYouDo) {
+                    Contract.assertTrue(eventsToResolve.length < 2, `Multiple effects for an 'if you do' condition are not supported. Events: ${eventsToResolve.map((event) => event.name).join(', ')}`);
+                    window.setSubAbilityStep(
+                        () => new CardAbilityStep(this.game, this.card, this.properties.ifYouDo),
+                        context,
+                        () => eventsToResolve[0].isResolvedOrReplacementResolved
+                    );
+                } else if (this.properties.ifYouDoNot) {
+                    Contract.assertTrue(eventsToResolve.length < 2, `Multiple effects for an 'if you do not' condition are not supported. Events: ${eventsToResolve.map((event) => event.name).join(', ')}`);
+                    window.setSubAbilityStep(
+                        () => new CardAbilityStep(this.game, this.card, this.properties.ifYouDo),
+                        context,
+                        () => !eventsToResolve[0].isResolvedOrReplacementResolved
+                    );
                 }
+            // if no events for the current step, skip directly to the "then" step (if any)
             } else if (this.properties.then) {
-                // if no events for the current step, skip directly to the "then" step (if any)
                 const then = this.getConcreteThen(this.properties.then, context);
-                if (then.thenCondition && then.thenCondition(context)) {
+                if (!then.thenCondition || then.thenCondition(context)) {
                     let cardAbilityStep = new CardAbilityStep(this.game, this.card, then);
                     this.game.resolveAbility(cardAbilityStep.createContext(context.player));
                 }
@@ -129,6 +147,10 @@ class CardAbilityStep extends PlayerOrCardAbility {
             return then(context);
         }
         return then;
+    }
+
+    checkThenCondition(thenAbilityStep, context) {
+        return !thenAbilityStep.thenCondition || thenAbilityStep.thenCondition(context);
     }
 }
 
