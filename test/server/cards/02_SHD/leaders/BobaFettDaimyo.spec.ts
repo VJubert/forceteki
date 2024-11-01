@@ -36,7 +36,7 @@ describe('Boba Fett, Daimyo', function () {
 
                 // boba exhausted, nothing should happen while playing a unit with keyword
                 context.player1.clickCard(context.cantinaBraggart);
-                expect(context.player1).toHavePrompt('Choose a unit');
+                expect(context.player1).not.toHavePrompt('Choose a unit');
                 expect(context.player2).toBeActivePlayer();
             });
 
