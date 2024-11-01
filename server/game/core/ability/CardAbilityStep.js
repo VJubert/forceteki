@@ -115,6 +115,7 @@ class CardAbilityStep extends PlayerOrCardAbility {
         return this.game.openEventWindow(events);
     }
 
+    /** "Sub-ability-steps" are subsequent steps after the initial ability effect, such as "then" or "if you do" */
     getSubAbilityStep(context, resolvedAbilityEvents) {
         if (this.properties.then) {
             const then = this.getConcreteThen(this.properties.then, context);
@@ -125,6 +126,11 @@ class CardAbilityStep extends PlayerOrCardAbility {
             return null;
         }
 
+        // if there are no resolved events, we can skip past evaluating "if you do" conditions
+        if (resolvedAbilityEvents.length === 0) {
+            return null;
+        }
+
         let ifAbility;
         let effectShouldResolve;
 
@@ -132,16 +138,16 @@ class CardAbilityStep extends PlayerOrCardAbility {
             ifAbility = this.properties.ifYouDo;
             effectShouldResolve = true;
         } else if (this.properties.ifYouDoNot) {
-            ifAbility = this.properties.ifYouDo;
+            ifAbility = this.properties.ifYouDoNot;
             effectShouldResolve = false;
         } else {
             return null;
         }
 
-        Contract.assertTrue(resolvedAbilityEvents.length < 2, `Multiple effects for an 'if you do (not)' condition are not supported. Events: ${resolvedAbilityEvents.map((event) => event.name).join(', ')}`);
+        const conditionalEvent = resolvedAbilityEvents[resolvedAbilityEvents.length - 1];
 
-        return resolvedAbilityEvents[0].isResolvedOrReplacementResolved === effectShouldResolve
-            ? new CardAbilityStep(this.game, this.card, this.properties.ifYouDo).createContext(context.player)
+        return conditionalEvent.isResolvedOrReplacementResolved === effectShouldResolve
+            ? new CardAbilityStep(this.game, this.card, ifAbility).createContext(context.player)
             : null;
     }
 

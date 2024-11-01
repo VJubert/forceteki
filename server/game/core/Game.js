@@ -907,7 +907,7 @@ class Game extends EventEmitter {
     /**
      * Creates a "sub-window" for events which will have priority resolution and
      * be resolved immediately after the currently resolving set of events, preceding
-     * the next steps of any ability being triggered.
+     * the next steps of any ability being resolved.
      *
      * Typically used for defeat events.
      */

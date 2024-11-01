@@ -94,12 +94,23 @@ export class EventWindow extends BaseStepWithPipeline {
         return event;
     }
 
+    /**
+     * "Sub-ability-steps" are subsequent steps after the initial ability effect, such as "then" or "if you do."
+     * This function sets a generator method which will be used to evaluate the context after event resolution and,
+     * if appropriate, create the sub-ability step to be resolved next
+     */
     public setSubAbilityStep(subAbilityStepFn: () => AbilityContext) {
         Contract.assertIsNullLike(this.subAbilityStepFn, 'Attempting to set event window\'s then ability but it is already set');
 
         this.subAbilityStepFn = subAbilityStepFn;
     }
 
+    /**
+     * Adds "sub-window" events which will have priority resolution and be resolved immediately after the currently resolving
+     * set of events, preceding the next steps of the currently resolving ability.
+     *
+     * Typically used for defeat events.
+     */
     public addSubwindowEvents(events) {
         this.subwindowEvents = this.subwindowEvents.concat(events);
     }
