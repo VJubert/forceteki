@@ -123,7 +123,7 @@ export class GameEvent {
     }
 
     public checkCondition() {
-        if (!this.canResolve || this.isMetaEvent) {
+        if (!this.canResolve) {
             return;
         }
         if (!this.condition(this)) {
@@ -131,13 +131,7 @@ export class GameEvent {
         }
     }
 
-    public setContext(context) {
-        Contract.assertNotNullLike(context, `Attempting to set null context for ${this.name}`);
-        Contract.assertIsNullLike(this._context, `Attempting to set context for ${this.name} but it already has a value`);
-
-        this._context = context;
-    }
-
+    // TODO: refactor this to allow for "partial" replacement effects like Boba Fett's Armor
     public setReplacementEvent(replacementEvent: any) {
         Contract.assertNotNullLike(replacementEvent, `Attempting to set null replacementEvent for ${this.name}`);
         Contract.assertIsNullLike(this.replacementEvent, `Attempting to set replacementEvent ${replacementEvent.name} for ${this.name} but it already has a value: ${this.replacementEvent?.name}`);

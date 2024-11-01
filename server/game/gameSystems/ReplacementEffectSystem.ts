@@ -35,6 +35,7 @@ export class ReplacementEffectSystem<TContext extends TriggeredAbilityContext = 
 
             const replacementEvent = events[0];
 
+            // TODO: refactor this to allow for "partial" replacement effects like Boba Fett's Armor
             event.context.game.queueSimpleStep(() => {
                 event.context.event.setReplacementEvent(replacementEvent);
                 eventWindow.addEvent(replacementEvent);
