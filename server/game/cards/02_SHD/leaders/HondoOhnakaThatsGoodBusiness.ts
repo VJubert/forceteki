@@ -34,6 +34,7 @@ export default class HondoOhnakaThatsGoodBusiness extends LeaderUnitCard {
                 onCardPlayed: (event, context) => event.card.controller === context.source.controller && event.playType === PlayType.Smuggle
             },
             targetResolver: {
+                optional: true,
                 immediateEffect: AbilityHelper.immediateEffects.giveExperience()
             },
         });
