@@ -19,7 +19,6 @@ export default class TrandoshanHunters extends NonLeaderUnitCard {
                     target: context.source
                 })),
                 onFalse: AbilityHelper.immediateEffects.noAction()
-
             })
         });
     }
