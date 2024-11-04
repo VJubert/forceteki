@@ -16,6 +16,8 @@ describe('Guavian Antagonizer', function() {
 
                 context.player1.clickCard(context.guavianAntagonizer);
                 context.player1.clickCard(context.wampa);
+                expect(context.player2).toHaveExactPromptButtons(['Bounty: Draw a card', 'Pass']);
+                context.player2.clickPrompt('Bounty: Draw a card');
                 expect(context.player1.handSize).toBe(0);
                 expect(context.player2.handSize).toBe(1);
                 expect(context.player2).toBeActivePlayer();
@@ -37,6 +39,8 @@ describe('Guavian Antagonizer', function() {
 
                 context.player1.clickCard(context.guavianAntagonizer);
                 context.player1.clickCard(context.wampa);
+                expect(context.player2).toHaveExactPromptButtons(['Bounty: Draw a card', 'Pass']);
+                context.player2.clickPrompt('Bounty: Draw a card');
                 expect(context.player1.handSize).toBe(0);
                 expect(context.player2.handSize).toBe(0);
                 expect(context.p2Base.damage).toBe(3);
