@@ -1,6 +1,6 @@
-describe('Hunter of the Haxon Brood', function () {
+describe('Hunter of the Haxion Brood', function () {
     integration(function (contextRef) {
-        describe('Hunter of the Haxon Brood\'s ability', function () {
+        describe('Hunter of the Haxion Brood\'s ability', function () {
             beforeEach(function () {
                 contextRef.setupTest({
                     phase: 'action',
