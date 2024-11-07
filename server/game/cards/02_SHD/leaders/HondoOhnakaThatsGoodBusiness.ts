@@ -30,11 +30,11 @@ export default class HondoOhnakaThatsGoodBusiness extends LeaderUnitCard {
     protected override setupLeaderUnitSideAbilities() {
         this.addTriggeredAbility({
             title: 'Give an experience token to a unit',
+            optional: true,
             when: {
                 onCardPlayed: (event, context) => event.card.controller === context.source.controller && event.playType === PlayType.Smuggle
             },
             targetResolver: {
-                optional: true,
                 immediateEffect: AbilityHelper.immediateEffects.giveExperience()
             },
         });

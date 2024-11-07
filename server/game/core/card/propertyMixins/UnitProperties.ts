@@ -163,8 +163,6 @@ export function WithUnitProperties<TBaseClass extends InPlayCardConstructor>(Bas
                 ...otherProps,
                 title: 'Bounty: ' + title,
                 type: AbilityType.Triggered,
-                // 7.5.13.E : Resolving a Bounty ability is optional. If a player chooses not to resolve a Bounty ability, they are not considered to have collected that Bounty.
-                optional: true,
                 when: {
                     onCardDefeated: (event, context) => event.card === context.source
                     // TODO CAPTURE: add capture trigger

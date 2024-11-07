@@ -47,6 +47,8 @@ describe('Bright Hope, The Last Transport', function() {
                 expect(context.specforceSoldier.location).toBe('ground arena');
                 expect(context.player2).toBeActivePlayer();
             });
+
+            //TODO CHECK WITH TOKEN UNIT
         });
     });
 });

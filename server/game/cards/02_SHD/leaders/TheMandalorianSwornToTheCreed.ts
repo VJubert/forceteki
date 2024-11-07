@@ -1,5 +1,6 @@
 import AbilityHelper from '../../../AbilityHelper';
 import { LeaderUnitCard } from '../../../core/card/LeaderUnitCard';
+import { RelativePlayer } from "../../../core/Constants";
 
 export default class TheMandalorianSwornToTheCreed extends LeaderUnitCard {
     protected override getImplementationId() {
@@ -20,6 +21,7 @@ export default class TheMandalorianSwornToTheCreed extends LeaderUnitCard {
             ifYouDo: {
                 title: 'Exhaust an enemy unit with 4 or less remaining HP',
                 targetResolver: {
+                    controller: RelativePlayer.Opponent,
                     cardCondition: (card) => card.isUnit() && card.remainingHp <= 4,
                     immediateEffect: AbilityHelper.immediateEffects.exhaust()
                 },
@@ -30,10 +32,12 @@ export default class TheMandalorianSwornToTheCreed extends LeaderUnitCard {
     protected override setupLeaderUnitSideAbilities() {
         this.addTriggeredAbility({
             title: 'Exhaust an enemy unit with 6 or less remaining HP',
+            optional: true,
             when: {
                 onCardPlayed: (event, context) => event.card.controller === context.source.controller && event.card.isUpgrade()
             },
             targetResolver: {
+                controller: RelativePlayer.Opponent,
                 cardCondition: (card) => card.isUnit() && card.remainingHp <= 6,
                 immediateEffect: AbilityHelper.immediateEffects.exhaust()
             },

@@ -1,6 +1,6 @@
 import AbilityHelper from '../../../AbilityHelper';
 import { NonLeaderUnitCard } from '../../../core/card/NonLeaderUnitCard';
-import { KeywordName, WildcardLocation } from '../../../core/Constants';
+import { KeywordName } from '../../../core/Constants';
 
 export default class TrandoshanHunters extends NonLeaderUnitCard {
     protected override getImplementationId() {
@@ -14,10 +14,8 @@ export default class TrandoshanHunters extends NonLeaderUnitCard {
         this.addWhenPlayedAbility({
             title: 'If an enemy unit has a Bounty, give an Experience token to this unit',
             immediateEffect: AbilityHelper.immediateEffects.conditional({
-                condition: (context) => context.source.controller.opponent.getUnitsInPlay(WildcardLocation.AnyArena, (card) => card.hasSomeKeyword(KeywordName.Bounty)).length > 0,
-                onTrue: AbilityHelper.immediateEffects.giveExperience((context) => ({
-                    target: context.source
-                })),
+                condition: (context) => context.source.controller.opponent.isKeywordInPlay(KeywordName.Bounty),
+                onTrue: AbilityHelper.immediateEffects.giveExperience(),
                 onFalse: AbilityHelper.immediateEffects.noAction()
             })
         });
