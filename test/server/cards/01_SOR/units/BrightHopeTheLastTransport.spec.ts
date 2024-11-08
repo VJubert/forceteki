@@ -20,7 +20,7 @@ describe('Bright Hope, The Last Transport', function() {
 
                 context.player1.clickCard(context.brightHope);
                 expect(context.player1).toBeAbleToSelectExactly([context.battlefieldMarine, context.specforceSoldier]);
-                expect(context.player1).toHaveChooseNoTargetButton();
+                expect(context.player1).toHavePassAbilityButton();
 
                 // return battlefield marine to hand and draw
                 context.player1.clickCard(context.battlefieldMarine);
@@ -36,11 +36,10 @@ describe('Bright Hope, The Last Transport', function() {
 
                 context.player1.clickCard(context.brightHope);
                 expect(context.player1).toBeAbleToSelectExactly([context.battlefieldMarine, context.specforceSoldier]);
-                expect(context.player1).toHaveChooseNoTargetButton();
+                expect(context.player1).toHavePassAbilityButton();
 
                 // pass and do not draw
-                context.player1.clickPrompt('Choose no target');
-                context.player1.clickPrompt('Done');
+                context.player1.clickPrompt('Pass ability');
 
                 expect(context.player1.hand.length).toBe(0);
                 expect(context.battlefieldMarine.location).toBe('ground arena');
@@ -48,7 +47,7 @@ describe('Bright Hope, The Last Transport', function() {
                 expect(context.player2).toBeActivePlayer();
             });
 
-            //TODO CHECK WITH TOKEN UNIT
+            // TODO CHECK WITH TOKEN UNIT
         });
     });
 });

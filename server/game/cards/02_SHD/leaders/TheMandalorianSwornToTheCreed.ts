@@ -1,6 +1,6 @@
 import AbilityHelper from '../../../AbilityHelper';
 import { LeaderUnitCard } from '../../../core/card/LeaderUnitCard';
-import { RelativePlayer } from "../../../core/Constants";
+import { RelativePlayer } from '../../../core/Constants';
 
 export default class TheMandalorianSwornToTheCreed extends LeaderUnitCard {
     protected override getImplementationId() {

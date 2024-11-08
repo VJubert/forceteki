@@ -1,6 +1,6 @@
 import AbilityHelper from '../../../AbilityHelper';
 import { NonLeaderUnitCard } from '../../../core/card/NonLeaderUnitCard';
-import { KeywordName, WildcardLocation } from '../../../core/Constants';
+import { KeywordName } from '../../../core/Constants';
 
 export default class HunterOfTheHaxionBrood extends NonLeaderUnitCard {
     protected override getImplementationId() {
@@ -13,7 +13,7 @@ export default class HunterOfTheHaxionBrood extends NonLeaderUnitCard {
     public override setupCardAbilities() {
         this.addConstantAbility({
             title: 'While an enemy unit has a Bounty, this unit gains Shielded',
-            condition: (context) => context.source.controller.opponent.getUnitsInPlay(WildcardLocation.AnyArena, (card) => card.hasSomeKeyword(KeywordName.Bounty)).length > 0,
+            condition: (context) => context.source.controller.opponent.isKeywordInPlay(KeywordName.Bounty),
             ongoingEffect: AbilityHelper.ongoingEffects.gainKeyword(KeywordName.Shielded),
         });
     }

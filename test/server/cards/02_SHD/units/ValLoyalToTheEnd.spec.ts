@@ -40,7 +40,7 @@ describe('Val, Loyal To The End', function() {
                 expect(context.player2).toBeActivePlayer();
             });
 
-            it('should deal 3 damage and and give 2 experience tokens', function () {
+            it(', opponent is current player, he should choose which triggers to activate first', function () {
                 const { context } = contextRef;
 
                 context.player1.passAction();
