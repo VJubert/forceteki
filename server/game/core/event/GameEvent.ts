@@ -59,7 +59,11 @@ export class GameEvent {
             return false;
         }
 
-        return this.replacementEvent.isResolvedOrReplaced;
+        if (this.replacementEvent as GameEvent !== undefined) {
+            return this.replacementEvent.isResolvedOrReplacementResolved;
+        }
+
+        return false;
     }
 
     public get window(): EventWindow | null {
